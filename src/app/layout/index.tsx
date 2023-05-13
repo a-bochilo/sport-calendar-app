@@ -13,9 +13,9 @@ import { setDate } from "./store/date.slice";
 import { dateSelector } from "./store/date.selectors";
 
 // ===================== components =====================
-import SideBar from "../components/sideBar";
-import GridContentContainer from "../components/gridContentContainer";
-import CalendarComponent from "../components/calendarComponent";
+import SideBar from "../components/sideBar.component";
+import GridContentContainer from "../components/gridContentContainer.component";
+import CalendarComponent from "../components/calendar.component";
 
 const Layout = () => {
   // ====== selectors ======
@@ -27,7 +27,7 @@ const Layout = () => {
   const isInitialLoading = useRef<boolean>(true);
   useEffect(() => {
     if (!isInitialLoading.current) return;
-    if (!chosenDate) dispatch(setDate(dayjs().valueOf()));
+    if (!chosenDate) dispatch(setDate(dayjs().format("DD-MM-YYYY")));
     isInitialLoading.current = false;
   }, []);
 
@@ -36,7 +36,7 @@ const Layout = () => {
 
   // ====== handlers ======
   const handleChooseDate = (date: Dayjs | null): void => {
-    if (date) dispatch(setDate(date.valueOf()));
+    if (date) dispatch(setDate(date.format("DD-MM-YYYY")));
   };
 
   return (
@@ -72,7 +72,13 @@ const Layout = () => {
             Sport Calendar
           </Typography>
         </AppBar>
-        <Outlet />
+        <Grid
+          container
+          spacing={1}
+          sx={{ flexGrow: 1, justifyContent: "center" }}
+        >
+          <Outlet />
+        </Grid>
       </GridContentContainer>
     </Grid>
   );

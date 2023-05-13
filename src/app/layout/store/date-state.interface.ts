@@ -1,3 +1,3 @@
 export interface IDateState {
-  chosenDate: number;
+  chosenDate: string;
 }

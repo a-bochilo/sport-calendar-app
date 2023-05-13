@@ -50,18 +50,6 @@ CustomGridContainer = styled(CustomGridContainer)`
 
   & > .MuiGrid-container {
     flex-grow: 1;
-
-    .outlet_container {
-      flexgrow: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 30px;
-    }
-
-    .aside_container {
-      height: 100%;
-    }
   }
 `;
 
