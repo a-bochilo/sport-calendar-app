@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 // ===================== mui =====================
 import { AppBar, Grid, Typography } from "@mui/material";
@@ -24,6 +24,7 @@ const Layout = () => {
   // ====== hooks ======
   const [isSideBarOpen, setIsSideBarOpen] = useState<boolean>(true);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const isInitialLoading = useRef<boolean>(true);
   useEffect(() => {
     if (!isInitialLoading.current) return;
@@ -36,7 +37,10 @@ const Layout = () => {
 
   // ====== handlers ======
   const handleChooseDate = (date: Dayjs | null): void => {
-    if (date) dispatch(setDate(date.format("DD-MM-YYYY")));
+    if (date) {
+      dispatch(setDate(date.format("DD-MM-YYYY")));
+      navigate(`/training-list/${date.format("DD-MM-YYYY")}`);
+    }
   };
 
   return (
@@ -75,7 +79,11 @@ const Layout = () => {
         <Grid
           container
           spacing={1}
-          sx={{ flexGrow: 1, justifyContent: "center" }}
+          sx={{
+            flexGrow: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
           <Outlet />
         </Grid>

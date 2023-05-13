@@ -6,10 +6,12 @@ import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 
 // =========================== slices ===========================
 import date from "./app/layout/store/date.slice";
+import training from "./app/pages/training/store/training.slice";
 
 const store = configureStore({
   reducer: {
     date,
+    training,
   },
 });
 

@@ -4,7 +4,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import dayjs from "dayjs";
 
 // ===================== interface =====================
-import { IDateState } from "./date-state.interface";
+import { IDateState } from "./dateState.interface";
 
 const initialState: IDateState = {
   chosenDate: dayjs().format("DD-MM-YYYY"),

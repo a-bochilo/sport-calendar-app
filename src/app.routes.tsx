@@ -1,5 +1,7 @@
-import React, { FC, Suspense, lazy } from "react";
+import { FC, Suspense, lazy, PropsWithChildren } from "react";
 import { Navigate, Routes, Route } from "react-router-dom";
+
+// ===================== components =====================
 import FallbackComponent from "./app/components/fallback.component";
 
 const isAllowed = () => {
@@ -8,7 +10,9 @@ const isAllowed = () => {
 };
 
 // ======= private route =======
-const PrivateRoute: FC<{ element: any }> = ({ element: Element }) => {
+const PrivateRoute: FC<PropsWithChildren & { element: any }> = ({
+  element: Element,
+}) => {
   return isAllowed() ? (
     <Suspense fallback={<FallbackComponent />}>
       <Element />
@@ -26,20 +30,27 @@ const PublicRoute: FC<{ element: any }> = ({ element: Element }) => (
 );
 
 // ======= layout & pages =======
-const Layout = React.lazy(() => import("./app/layout"));
-const LoginPage = React.lazy(() => import("./app/pages/login"));
+const Layout = lazy(() => import("./app/layout"));
+const LoginPage = lazy(() => import("./app/pages/login/login.page"));
+
+// ======= nested routes =======
+const TrainingListRoutes = lazy(
+  () => import("./app/pages/training/training.routes")
+);
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* PUBLIC */}
-      <Route path="/" element={<PublicRoute element={LoginPage} />} />
-      {/* PRIVATE */}
-      
-      {/* <Route element={<Layout />}>
-        <Route path="/" element={<Navigate to="/training" />} />
-        <Route path="/training/" element={<Navigate to="/training" />} />
-      </Route> */}
+      <Route element={<Layout />}>
+        {/* PUBLIC */}
+        <Route path="/" element={<PublicRoute element={LoginPage} />} />
+
+        {/* PRIVATE */}
+        <Route
+          path="training-list/*"
+          element={<PrivateRoute element={TrainingListRoutes} />}
+        />
+      </Route>
     </Routes>
   );
 };
