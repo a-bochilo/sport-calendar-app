@@ -1,10 +1,17 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+
+// ===================== types =====================
 import { ITrainingState } from "./trainingState.interface";
 import { ITraining } from "../../../../types/training.types";
+import { ActivityStatus } from "../../../../types/activityStatus.enum";
 
 const initialState: ITrainingState = {
   trainingList: null,
-  dayTrainingList: null,
+  dayTrainingList: {
+    toDo: [],
+    inProgress: [],
+    done: [],
+  },
   chosenTraining: null,
   nextId: 0,
 };
@@ -18,8 +25,9 @@ const trainingSlice = createSlice({
       if (!trainingStateFromLS) return;
       const trainingState = JSON.parse(trainingStateFromLS) as Omit<
         ITrainingState,
-        "dayTraining"
+        "dayTrainingList" | "chosenTraining"
       >;
+
       state.trainingList = trainingState.trainingList;
     },
 
@@ -48,10 +56,44 @@ const trainingSlice = createSlice({
       //!check if saved
     },
 
-    setDayTrainingList: (state, action: PayloadAction<string>) => {},
+    setDayTrainingList: (state, action: PayloadAction<string>) => {
+      state.dayTrainingList = {
+        toDo: [],
+        inProgress: [],
+        done: [],
+      };
+
+      if (!state.trainingList) return;
+
+      const fullDayTrainingList = state.trainingList.filter(
+        (training) => training.date === action.payload
+      );
+
+      if (!fullDayTrainingList) return;
+
+      fullDayTrainingList.forEach((training) => {
+        switch (training.status) {
+          case ActivityStatus.toDo:
+            state.dayTrainingList.toDo.push(training);
+            break;
+          case ActivityStatus.inProgress:
+            state.dayTrainingList.inProgress.push(training);
+            break;
+          case ActivityStatus.done:
+            state.dayTrainingList.done.push(training);
+            break;
+          default:
+            return;
+        }
+      });
+    },
 
     setChosenTraining: (state, action: PayloadAction<ITraining>) => {
       state.chosenTraining = action.payload;
+    },
+
+    clearChosenTraining: (state) => {
+      state.chosenTraining = null;
     },
   },
 });
@@ -64,6 +106,7 @@ export const {
   getAllTraining,
   addTraining,
   updateTraining,
-  setDayTrainingList: setDayTraining,
+  setDayTrainingList,
   setChosenTraining,
+  clearChosenTraining,
 } = actions;

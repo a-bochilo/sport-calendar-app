@@ -1,6 +1,10 @@
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
+// ===================== dnd =====================
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+
 // ===================== mui =====================
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme/mainTheme";
@@ -17,9 +21,11 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
+          <DndProvider backend={HTML5Backend}>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </DndProvider>
         </Provider>
       </ThemeProvider>
     </ErrorBoundary>
