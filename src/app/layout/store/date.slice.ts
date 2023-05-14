@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { IDateState } from "./dateState.interface";
 
 const initialState: IDateState = {
-  chosenDate: dayjs().format("DD-MM-YYYY"),
+  chosenDate: dayjs().format("YYYY-MM-DD"),
 };
 
 const dateSlice = createSlice({

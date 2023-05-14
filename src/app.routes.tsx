@@ -6,6 +6,7 @@ import FallbackComponent from "./app/components/fallback.component";
 
 const isAllowed = () => {
   const token = Boolean(window.localStorage.getItem("token"));
+
   return token;
 };
 
@@ -31,12 +32,14 @@ const PublicRoute: FC<{ element: any }> = ({ element: Element }) => (
 
 // ======= layout & pages =======
 const Layout = lazy(() => import("./app/layout"));
-const LoginPage = lazy(() => import("./app/pages/login/login.page"));
+const LoginPage = lazy(() => import("./app/login/login.page"));
+const ProfilePage = lazy(() => import("./app/profile"));
 
 // ======= nested routes =======
 const TrainingListRoutes = lazy(
-  () => import("./app/pages/training/training.routes")
+  () => import("./app/training/trainingList.routes")
 );
+const TrainingRoutes = lazy(() => import("./app/training/training.routes"));
 
 const AppRoutes = () => {
   return (
@@ -50,7 +53,18 @@ const AppRoutes = () => {
           path="training-list/*"
           element={<PrivateRoute element={TrainingListRoutes} />}
         />
+        <Route
+          path="training/*"
+          element={<PrivateRoute element={TrainingRoutes} />}
+        />
+        <Route
+          path="profile"
+          element={<PrivateRoute element={ProfilePage} />}
+        />
       </Route>
+
+      {/* DEFAULT */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };

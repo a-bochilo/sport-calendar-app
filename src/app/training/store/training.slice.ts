@@ -2,8 +2,8 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 // ===================== types =====================
 import { ITrainingState } from "./trainingState.interface";
-import { ITraining } from "../../../../types/training.types";
-import { ActivityStatus } from "../../../../types/activityStatus.enum";
+import { ITraining } from "../../../types/training.types";
+import { ActivityStatus } from "../../../types/activityStatus.enum";
 
 const initialState: ITrainingState = {
   trainingList: null,
@@ -23,27 +23,58 @@ const trainingSlice = createSlice({
     getAllTraining: (state) => {
       const trainingStateFromLS = window.localStorage.getItem("training");
       if (!trainingStateFromLS) return;
+
       const trainingState = JSON.parse(trainingStateFromLS) as Omit<
         ITrainingState,
         "dayTrainingList" | "chosenTraining"
       >;
 
       state.trainingList = trainingState.trainingList;
+      state.nextId = trainingState.nextId;
     },
 
     addTraining: (state, action: PayloadAction<ITraining>) => {
       state.nextId = state.nextId + 1;
       if (!state.trainingList) {
         state.trainingList = [action.payload];
-        window.localStorage.setItem("training", JSON.stringify(state));
+        window.localStorage.setItem(
+          "training",
+          JSON.stringify({
+            trainingList: state.trainingList,
+            nextId: state.nextId,
+          })
+        );
         return;
       }
+
       state.trainingList.push(action.payload);
-      window.localStorage.setItem("training", JSON.stringify(state));
+      window.localStorage.setItem(
+        "training",
+        JSON.stringify({
+          trainingList: state.trainingList,
+          nextId: state.nextId,
+        })
+      );
+    },
+
+    deleteTraining: (state, action: PayloadAction<number>) => {
+      if (!state.trainingList) return;
+      state.trainingList = state.trainingList.filter(
+        (training) => training.id !== action.payload
+      );
+
+      window.localStorage.setItem(
+        "training",
+        JSON.stringify({
+          trainingList: state.trainingList,
+          nextId: state.nextId,
+        })
+      );
     },
 
     updateTraining: (state, action: PayloadAction<ITraining>) => {
       if (!state.trainingList) return;
+
       const training = state.trainingList.find(
         ({ id }) => action.payload.id === id
       );
@@ -51,9 +82,14 @@ const trainingSlice = createSlice({
       if (!training) return;
 
       Object.assign(training, action.payload);
-      window.localStorage.setItem("training", JSON.stringify(state));
 
-      //!check if saved
+      window.localStorage.setItem(
+        "training",
+        JSON.stringify({
+          trainingList: state.trainingList,
+          nextId: state.nextId,
+        })
+      );
     },
 
     setDayTrainingList: (state, action: PayloadAction<string>) => {
@@ -69,7 +105,7 @@ const trainingSlice = createSlice({
         (training) => training.date === action.payload
       );
 
-      if (!fullDayTrainingList) return;
+      if (!fullDayTrainingList.length) return;
 
       fullDayTrainingList.forEach((training) => {
         switch (training.status) {
@@ -105,6 +141,7 @@ export default reducer;
 export const {
   getAllTraining,
   addTraining,
+  deleteTraining,
   updateTraining,
   setDayTrainingList,
   setChosenTraining,

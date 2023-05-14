@@ -2,20 +2,25 @@ import { useEffect, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 // ===================== mui =====================
-import { AppBar, Grid, Typography } from "@mui/material";
+import { AppBar, Grid, Typography, IconButton } from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 // ===================== dayjs =====================
 import dayjs, { Dayjs } from "dayjs";
 
-// ===================== components =====================
+// ===================== store =====================
 import { useAppDispatch, useAppSelector } from "../../store";
 import { setDate } from "./store/date.slice";
 import { dateSelector } from "./store/date.selectors";
+import { fetchWeatherForecast } from "../forecast/store/forecast.actions";
 
 // ===================== components =====================
 import SideBar from "../components/sideBar.component";
 import GridContentContainer from "../components/gridContentContainer.component";
 import CalendarComponent from "../components/calendar.component";
+
+// ===================== types =====================
+import { IApiWeaterGetProps } from "../../types/api.types";
 
 const Layout = () => {
   // ====== selectors ======
@@ -26,9 +31,20 @@ const Layout = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isInitialLoading = useRef<boolean>(true);
+
   useEffect(() => {
     if (!isInitialLoading.current) return;
-    if (!chosenDate) dispatch(setDate(dayjs().format("DD-MM-YYYY")));
+
+    if (!chosenDate) dispatch(setDate(dayjs().format("YYYY-MM-DD")));
+
+    navigator.geolocation.getCurrentPosition((position) => {
+      const props: IApiWeaterGetProps = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
+      dispatch(fetchWeatherForecast(props));
+    });
+
     isInitialLoading.current = false;
   }, []);
 
@@ -38,8 +54,8 @@ const Layout = () => {
   // ====== handlers ======
   const handleChooseDate = (date: Dayjs | null): void => {
     if (date) {
-      dispatch(setDate(date.format("DD-MM-YYYY")));
-      navigate(`/training-list/${date.format("DD-MM-YYYY")}`);
+      dispatch(setDate(date.format("YYYY-MM-DD")));
+      navigate(`/training-list/${date.format("YYYY-MM-DD")}`);
     }
   };
 
@@ -52,7 +68,10 @@ const Layout = () => {
         setIsSideBarOpen={setIsSideBarOpen}
       >
         {isSideBarOpen ? (
-          <CalendarComponent handleChooseDate={handleChooseDate} />
+          <CalendarComponent
+            chosenDate={chosenDate}
+            handleChooseDate={handleChooseDate}
+          />
         ) : null}
       </SideBar>
       <GridContentContainer
@@ -67,14 +86,22 @@ const Layout = () => {
           component="header"
           sx={{
             display: "flex",
-            justifyContent: "center",
+            flexDirection: "row",
+            justifyContent: "space-evenly",
             alignItems: "center",
             height: "65px",
           }}
         >
-          <Typography variant="h4" component="h1">
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ display: "flex", flexGrow: 1, justifyContent: "center" }}
+          >
             Sport Calendar
           </Typography>
+          <IconButton onClick={() => navigate("/profile")} sx={{ mr: 6 }}>
+            <AccountCircleIcon fontSize="large" color="warning" />
+          </IconButton>
         </AppBar>
         <Grid
           container

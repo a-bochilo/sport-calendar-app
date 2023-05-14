@@ -2,11 +2,11 @@ import { FC, PropsWithChildren, Suspense, lazy } from "react";
 import { Navigate, Routes, Route } from "react-router-dom";
 
 // ===================== components =====================
-import FallbackComponent from "../../components/fallback.component";
+import FallbackComponent from "../components/fallback.component";
 
 // ===================== selectors =====================
-import { useAppSelector } from "../../../store";
-import { dateSelector } from "../../layout/store/date.selectors";
+import { useAppSelector } from "../../store";
+import { dateSelector } from "../layout/store/date.selectors";
 
 const Suspended: FC<PropsWithChildren & { element: any }> = ({
   element: Element,

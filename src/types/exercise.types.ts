@@ -5,19 +5,18 @@ export interface IExerciseCardProps {
 }
 
 export enum ExerciseTypes {
-  running = "running",
-  plank = "plank",
-  pullups = "pullups",
-  pushups = "pushups",
-  squats = "squats",
+  running = "Running",
+  plank = "Plank",
+  pullups = "Pullups",
+  pushups = "Pushups",
+  squats = "Squats",
 }
 
 export interface IExercise {
   id: number;
-  date: string;
   status: ActivityStatus;
   type: ExerciseTypes;
   value: number;
   sets: number;
-  trainigId: number;
+  trainingId: number;
 }

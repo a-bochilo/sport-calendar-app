@@ -18,18 +18,11 @@ import {
   Paper,
   styled,
 } from "@mui/material";
-import {
-  primaryLight,
-  primaryBackground,
-} from "../../../theme/mainTheme.actions";
+import { primaryLight, primaryBackground } from "../../theme/mainTheme.actions";
 
 // ===================== types =====================
-import { AuthType } from "../../../types/auth.types";
-
-interface ILoginForm {
-  email: string;
-  password: string;
-}
+import { AuthType } from "../../types/auth.types";
+import { ILoginForm } from "../../types/login.types";
 
 // ======= styled =======
 const StyledButtonGroup = styled(ToggleButtonGroup)`
