@@ -1,7 +1,7 @@
 {
   "name": "sport-calendar-app",
   "version": "0.1.0",
-  "homepage": "https://github.com/a-bochilo/sport-calendar-app",
+  "homepage": "https://a-bochilo.github.io/sport-calendar-app",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.0",
