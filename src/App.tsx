@@ -14,6 +14,8 @@ import store from "./store";
 
 // ===================== boundary =====================
 import ErrorBoundary from "./app/components/error-boundary.component";
+
+// ===================== routes =====================
 import AppRoutes from "./app.routes";
 
 function App() {
