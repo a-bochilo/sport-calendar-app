@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 // ===================== mui =====================
 import { AppBar, Grid, Typography, IconButton } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 // ===================== dayjs =====================
 import dayjs, { Dayjs } from "dayjs";
@@ -52,11 +53,19 @@ const Layout = () => {
   const closedSideBarWidth = 50;
 
   // ====== handlers ======
-  const handleChooseDate = (date: Dayjs | null): void => {
-    if (date) {
-      dispatch(setDate(date.format("YYYY-MM-DD")));
-      navigate(`/training-list/${date.format("YYYY-MM-DD")}`);
-    }
+  const handleChooseDate = useCallback(
+    (date: Dayjs | null): void => {
+      if (date) {
+        dispatch(setDate(date.format("YYYY-MM-DD")));
+        navigate(`/training-list/${date.format("YYYY-MM-DD")}`);
+      }
+    },
+    [dispatch, navigate]
+  );
+
+  const handleLogout = () => {
+    window.localStorage.removeItem("token");
+    navigate("/");
   };
 
   return (
@@ -99,8 +108,14 @@ const Layout = () => {
           >
             Sport Calendar
           </Typography>
-          <IconButton onClick={() => navigate("/profile")} sx={{ mr: 6 }}>
-            <AccountCircleIcon fontSize="large" color="warning" />
+          <IconButton
+            onClick={() => navigate("/profile")}
+            sx={{ mr: 2, color: "white" }}
+          >
+            <AccountCircleIcon fontSize="large" />
+          </IconButton>
+          <IconButton onClick={handleLogout} sx={{ mr: 6, color: "white" }}>
+            <LogoutIcon fontSize="large" />
           </IconButton>
         </AppBar>
         <Grid

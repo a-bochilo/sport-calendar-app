@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 // ===================== dayjs =====================
@@ -139,9 +139,12 @@ const TrainingPage = () => {
   }, [currentTraining.current, forecast.data]);
 
   // ===== handlers =====
-  const handleDragStart = (exercise: IExercise) => {
-    dispatch(setChosenExercise(exercise));
-  };
+  const handleDragStart = useCallback(
+    (exercise: IExercise) => {
+      dispatch(setChosenExercise(exercise));
+    },
+    [dispatch]
+  );
 
   const getTrainingStatus = (): ActivityStatus => {
     if (inProgress.length || (toDo.length && done.length))
@@ -150,21 +153,27 @@ const TrainingPage = () => {
     return ActivityStatus.toDo;
   };
 
-  const handleDrop = (status: ActivityStatus) => {
-    if (!chosenExercise) return;
+  const handleDrop = useCallback(
+    (status: ActivityStatus) => {
+      if (!chosenExercise) return;
 
-    const updatedExercise: IExercise = {
-      ...chosenExercise,
-      status,
-    };
+      const updatedExercise: IExercise = {
+        ...chosenExercise,
+        status,
+      };
 
-    dispatch(updateExercise(updatedExercise));
-    dispatch(clearChosenExercise());
-  };
+      dispatch(updateExercise(updatedExercise));
+      dispatch(clearChosenExercise());
+    },
+    [chosenExercise, dispatch]
+  );
 
-  const handleUpdateExercise = (exercise: IExercise) => {
-    dispatch(updateExercise(exercise));
-  };
+  const handleUpdateExercise = useCallback(
+    (exercise: IExercise) => {
+      dispatch(updateExercise(exercise));
+    },
+    [dispatch]
+  );
 
   const handleAddExerciseClick = () => {
     if (!trainingId) return;
@@ -172,42 +181,48 @@ const TrainingPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleCreateExercise = (exercise: IExercise) => {
-    if (!currentTraining.current) {
+  const handleCreateExercise = useCallback(
+    (exercise: IExercise) => {
+      if (!currentTraining.current) {
+        setIsModalOpen(false);
+        navigate("/training-list");
+        return;
+      }
+
+      dispatch(addExercise(exercise));
+      dispatch(
+        updateTraining({
+          ...currentTraining.current,
+          exerciseIds: [...currentTraining.current.exerciseIds, exercise.id],
+        })
+      );
+
       setIsModalOpen(false);
-      navigate("/training-list");
-      return;
-    }
+    },
+    [dispatch, navigate]
+  );
 
-    dispatch(addExercise(exercise));
-    dispatch(
-      updateTraining({
-        ...currentTraining.current,
-        exerciseIds: [...currentTraining.current.exerciseIds, exercise.id],
-      })
-    );
+  const handleDeleteExercise = useCallback(
+    (exercise: IExercise) => {
+      if (!currentTraining.current) {
+        navigate("/training-list");
+        return;
+      }
 
-    setIsModalOpen(false);
-  };
+      dispatch(
+        updateTraining({
+          ...currentTraining.current,
+          exerciseIds: currentTraining.current.exerciseIds.filter(
+            (id) => id !== exercise.id
+          ),
+        })
+      );
 
-  const handleDeleteExercise = (exercise: IExercise) => {
-    if (!currentTraining.current) {
-      navigate("/training-list");
-      return;
-    }
-
-    dispatch(
-      updateTraining({
-        ...currentTraining.current,
-        exerciseIds: currentTraining.current.exerciseIds.filter(
-          (id) => id !== exercise.id
-        ),
-      })
-    );
-
-    dispatch(deleteExercise(exercise.id));
-    dispatch(clearChosenExercise());
-  };
+      dispatch(deleteExercise(exercise.id));
+      dispatch(clearChosenExercise());
+    },
+    [dispatch, navigate]
+  );
 
   // ===== render card function =====
   const renderCard = (exercise: IExercise) => (

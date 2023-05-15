@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 // ===================== mui =====================
@@ -72,31 +72,37 @@ const TrainingListPage = () => {
   }, [date, trainingList]);
 
   // ===== handlers =====
-  const handleDragStart = (training: ITraining) => {
-    dispatch(setChosenTraining(training));
-  };
+  const handleDragStart = useCallback(
+    (training: ITraining) => {
+      dispatch(setChosenTraining(training));
+    },
+    [dispatch]
+  );
 
-  const handleDrop = (status: ActivityStatus) => {
-    if (!chosenTraining) return;
+  const handleDrop = useCallback(
+    (status: ActivityStatus) => {
+      if (!chosenTraining) return;
 
-    const updatedTraining: ITraining = {
-      ...chosenTraining,
-      status,
-    };
+      const updatedTraining: ITraining = {
+        ...chosenTraining,
+        status,
+      };
 
-    dispatch(updateTraining(updatedTraining));
+      dispatch(updateTraining(updatedTraining));
 
-    const exerciseArr = exerciseList?.filter(({ id }) =>
-      chosenTraining.exerciseIds.includes(id)
-    );
-    exerciseArr?.forEach((exercise) => {
-      dispatch(updateExercise({ ...exercise, status }));
-    });
+      const exerciseArr = exerciseList?.filter(({ id }) =>
+        chosenTraining.exerciseIds.includes(id)
+      );
+      exerciseArr?.forEach((exercise) => {
+        dispatch(updateExercise({ ...exercise, status }));
+      });
 
-    dispatch(clearChosenTraining());
-  };
+      dispatch(clearChosenTraining());
+    },
+    [dispatch, chosenTraining, exerciseList]
+  );
 
-  const handleCreateTraining = () => {
+  const handleCreateTraining = useCallback(() => {
     if (!date) return;
 
     const newTraining: ITraining = {
@@ -109,18 +115,24 @@ const TrainingListPage = () => {
     dispatch(addTraining(newTraining));
     dispatch(setChosenTraining(newTraining));
     navigate(`/training/${nextTrainingId}`);
-  };
+  }, [dispatch, navigate, date, nextTrainingId]);
 
-  const handleDeleteTraining = (training: ITraining) => {
-    training.exerciseIds.forEach((id) => dispatch(deleteExercise(id)));
-    dispatch(deleteTraining(training.id));
-    dispatch(clearChosenTraining());
-  };
+  const handleDeleteTraining = useCallback(
+    (training: ITraining) => {
+      training.exerciseIds.forEach((id) => dispatch(deleteExercise(id)));
+      dispatch(deleteTraining(training.id));
+      dispatch(clearChosenTraining());
+    },
+    [dispatch]
+  );
 
-  const handleViewTraining = (training: ITraining) => {
-    dispatch(setChosenTraining(training));
-    navigate(`/training/${training.id}`);
-  };
+  const handleViewTraining = useCallback(
+    (training: ITraining) => {
+      dispatch(setChosenTraining(training));
+      navigate(`/training/${training.id}`);
+    },
+    [dispatch, navigate]
+  );
 
   // ===== render card function =====
   const renderCard = (training: ITraining) =>
